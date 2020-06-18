@@ -7,7 +7,7 @@ The ESP32_codec2.ino file is an example to transmit and receive voice using a Lo
 # Install
 This library do not have an installer, just copy the codec2 folder to your Arduino library folder.
 
-Codec 2 is a low-bitrate speech audio codec (speech coding) that is patent free and open source develop by David Grant Rowe.
+Codec2 is a low-bitrate speech audio codec (speech coding) that is patent free and open source develop by David Grant Rowe.
 http://www.rowetel.com/
 
 
