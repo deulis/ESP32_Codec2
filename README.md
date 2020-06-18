@@ -10,4 +10,4 @@ This library do not have an installer, just copy the codec2 folder to your Ardui
 Codec 2 is a low-bitrate speech audio codec (speech coding) that is patent free and open source develop by David Grant Rowe.
 http://www.rowetel.com/
 
-Eng. Deulis Antonio Pelegrin Jaime
+
