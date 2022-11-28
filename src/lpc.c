@@ -256,14 +256,14 @@ void synthesis_filter(
 
 //Begin Deulis Comment
 //
-///*---------------------------------------------------------------------------*\
-//
-//  find_aks()
-//
-//  This function takes a frame of samples, and determines the linear
-//  prediction coefficients for that frame of samples.
-//
-//\*---------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+
+  find_aks()
+
+  This function takes a frame of samples, and determines the linear
+  prediction coefficients for that frame of samples.
+
+\*---------------------------------------------------------------------------*/
 //
 //void find_aks(
 //  float Sn[],	/* Nsam samples with order sample memory */

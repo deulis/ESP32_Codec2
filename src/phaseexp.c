@@ -57,7 +57,7 @@ float get_float(FILE * in, const char * name, char * * cursor, char * buffer, in
     char *	s = *cursor;
     char	c;
 
-    while ( (c = *s) != '\0' && !isdigit(c) && c != '-' && c != '.' )
+    while ( (c = *s) != '\0' && !isdigit((int)c) && c != '-' && c != '.' )
       s++;
 
     /* Comments start with "#" and continue to the end of the line. */
@@ -69,7 +69,8 @@ float get_float(FILE * in, const char * name, char * * cursor, char * buffer, in
 
       if ( end != s )
         *cursor = end;
-        return f;
+        
+      return f;
     }
 
     if ( fgets(buffer, size, in) == NULL ) {
@@ -216,47 +217,47 @@ struct AMPINDEX {
     int   index;
 };
 
-static void bubbleSort(struct AMPINDEX numbers[], int array_size)
-{
-    int i, j;
-    struct AMPINDEX temp;
+// static void bubbleSort(struct AMPINDEX numbers[], int array_size)
+// {
+//     int i, j;
+//     struct AMPINDEX temp;
 
-  for (i = (array_size - 1); i > 0; i--)
-  {
-    for (j = 1; j <= i; j++)
-    {
-	//printf("i %d j %d %f %f \n", i, j, numbers[j-1].amp, numbers[j].amp);
-      if (numbers[j-1].amp < numbers[j].amp)
-      {
-        temp = numbers[j-1];
-        numbers[j-1] = numbers[j];
-        numbers[j] = temp;
-      }
-    }
-  }
-}
+//   for (i = (array_size - 1); i > 0; i--)
+//   {
+//     for (j = 1; j <= i; j++)
+//     {
+// 	//printf("i %d j %d %f %f \n", i, j, numbers[j-1].amp, numbers[j].amp);
+//       if (numbers[j-1].amp < numbers[j].amp)
+//       {
+//         temp = numbers[j-1];
+//         numbers[j-1] = numbers[j];
+//         numbers[j] = temp;
+//       }
+//     }
+//   }
+// }
 
 
-static void print_pred_error(struct PEXP *pexp, MODEL *model, int start, int end, float mag_thresh) {
-    int   i;
-    float mag;
+// static void print_pred_error(struct PEXP *pexp, MODEL *model, int start, int end, float mag_thresh) {
+//     int   i;
+//     float mag;
 
-    mag = 0.0;
-    for(i=start; i<=end; i++)
-	mag += model->A[i]*model->A[i];
-    mag = 10*log10(mag/(end-start));
+//     mag = 0.0;
+//     for(i=start; i<=end; i++)
+// 	mag += model->A[i]*model->A[i];
+//     mag = 10*log10(mag/(end-start));
 
-    if (mag > mag_thresh) {
-	for(i=start; i<=end; i++) {
-	    float pred = pexp->phi_prev[i] + N*i*(model->Wo + pexp->Wo_prev)/2.0;
-	    float err = pred - model->phi[i];
-	    err = atan2(sin(err),cos(err));
-	    printf("%f\n",err);
-	}
-	//printf("\n");
-    }
+//     if (mag > mag_thresh) {
+// 	for(i=start; i<=end; i++) {
+// 	    float pred = pexp->phi_prev[i] + N*i*(model->Wo + pexp->Wo_prev)/2.0;
+// 	    float err = pred - model->phi[i];
+// 	    err = atan2(sin(err),cos(err));
+// 	    printf("%f\n",err);
+// 	}
+// 	//printf("\n");
+//     }
 
-}
+// }
 
 
 static void predict_phases(struct PEXP *pexp, MODEL *model, int start, int end) {
@@ -343,13 +344,13 @@ static void predict_phases2(struct PEXP *pexp, MODEL *model, int start, int end)
 
 }
 
-static void rand_phases(MODEL *model, int start, int end) {
-    int i;
+// static void rand_phases(MODEL *model, int start, int end) {
+//     int i;
 
-    for(i=start; i<=end; i++)
-	model->phi[i] = PI*(1.0 - 2.0*(float)rand()/RAND_MAX);
+//     for(i=start; i<=end; i++)
+// 	model->phi[i] = PI*(1.0 - 2.0*(float)rand()/RAND_MAX);
 
-}
+// }
 
 static void quant_phase(float *phase, float min, float max, int bits) {
     int   levels = 1 << bits;
@@ -376,250 +377,250 @@ static void quant_phases(MODEL *model, int start, int end, int bits) {
     }
 }
 
-static void fixed_bits_per_frame(struct PEXP *pexp, MODEL *model, int m, int budget) {
-    int res, finished;
+// static void fixed_bits_per_frame(struct PEXP *pexp, MODEL *model, int m, int budget) {
+//     int res, finished;
 
-    res = 3;
-    finished = 0;
+//     res = 3;
+//     finished = 0;
 
-    while(!finished) {
-	if (m > model->L/2)
-	    res = 2;
-	if (((budget - res) < 0) || (m > model->L))
-	    finished = 1;
-	else {
-	    quant_phase(&model->phi[m], -PI, PI, res);
-	    budget -= res;
-	    m++;
-	}
-    }
-    printf("m: %d L: %d budget: %d\n", m, model->L, budget);
-    predict_phases(pexp, model, m, model->L);
-    //rand_phases(model, m, model->L);
-}
+//     while(!finished) {
+// 	if (m > model->L/2)
+// 	    res = 2;
+// 	if (((budget - res) < 0) || (m > model->L))
+// 	    finished = 1;
+// 	else {
+// 	    quant_phase(&model->phi[m], -PI, PI, res);
+// 	    budget -= res;
+// 	    m++;
+// 	}
+//     }
+//     printf("m: %d L: %d budget: %d\n", m, model->L, budget);
+//     predict_phases(pexp, model, m, model->L);
+//     //rand_phases(model, m, model->L);
+// }
 
 /* used to plot histogram of quantisation error, for 3 bits, 8 levels,
    should be uniform between +/- PI/8 */
 
-static void check_phase_quant(MODEL *model, float tol)
-{
-    int m;
-    float phi_before[MAX_AMP];
+// static void check_phase_quant(MODEL *model, float tol)
+// {
+//     int m;
+//     float phi_before[MAX_AMP];
 
-    for(m=1; m<=model->L; m++)
-	phi_before[m] = model->phi[m];
+//     for(m=1; m<=model->L; m++)
+// 	phi_before[m] = model->phi[m];
 
-    quant_phases(model, 1, model->L, 3);
+//     quant_phases(model, 1, model->L, 3);
 
-    for(m=1; m<=model->L; m++) {
-	float err = phi_before[m] - model->phi[m];
-	printf("%f\n", err);
-	if (fabs(err) > tol)
-	    exit(0);
-    }
-}
-
-
-static float est_phi1(MODEL *model, int start, int end)
-{
-    int m;
-    float delta, s, c, phi1_est;
-
-    if (end > model->L)
-	end = model->L;
-
-    s = c = 0.0;
-    for(m=start; m<end; m++) {
-	delta = model->phi[m+1] - model->phi[m];
-	s += sin(delta);
-	c += cos(delta);
-    }
-
-    phi1_est = atan2(s,c);
-
-    return phi1_est;
-}
-
-static void print_phi1_pred_error(MODEL *model, int start, int end)
-{
-    int m;
-    float phi1_est;
-
-    phi1_est = est_phi1(model, start, end);
-
-    for(m=start; m<end; m++) {
-	float err = model->phi[m+1] - model->phi[m] - phi1_est;
-	err = atan2(sin(err),cos(err));
-	printf("%f\n", err);
-    }
-}
+//     for(m=1; m<=model->L; m++) {
+// 	float err = phi_before[m] - model->phi[m];
+// 	printf("%f\n", err);
+// 	if (fabs(err) > tol)
+// 	    exit(0);
+//     }
+// }
 
 
-static void first_order_band(MODEL *model, int start, int end, float phi1_est)
-{
-    int   m;
-    float pred_err, av_pred_err;
-    float c,s;
+// static float est_phi1(MODEL *model, int start, int end)
+// {
+//     int m;
+//     float delta, s, c, phi1_est;
 
-    s = c = 0.0;
-    for(m=start; m<end; m++) {
-	pred_err = model->phi[m] - phi1_est*m;
-	s += sin(pred_err);
-	c += cos(pred_err);
-    }
+//     if (end > model->L)
+// 	end = model->L;
 
-    av_pred_err = atan2(s,c);
-    for(m=start; m<end; m++) {
-	model->phi[m] = av_pred_err + phi1_est*m;
-	model->phi[m] = atan2(sin(model->phi[m]), cos(model->phi[m]));
-    }
+//     s = c = 0.0;
+//     for(m=start; m<end; m++) {
+// 	delta = model->phi[m+1] - model->phi[m];
+// 	s += sin(delta);
+// 	c += cos(delta);
+//     }
 
-}
+//     phi1_est = atan2(s,c);
 
+//     return phi1_est;
+// }
 
-static void sub_linear(MODEL *model, int start, int end, float phi1_est)
-{
-    int   m;
+// static void print_phi1_pred_error(MODEL *model, int start, int end)
+// {
+//     int m;
+//     float phi1_est;
 
-    for(m=start; m<end; m++) {
-	model->phi[m] = m*phi1_est;
-    }
-}
+//     phi1_est = est_phi1(model, start, end);
 
-
-static void top_amp(struct PEXP *pexp, MODEL *model, int start, int end, int n_harm, int pred)
-{
-    int removed = 0, not_removed = 0;
-    int top, i, j;
-    struct AMPINDEX sorted[MAX_AMP];
-
-    /* sort into ascending order of amplitude */
-
-    printf("\n");
-    for(i=start,j=0; i<end; i++,j++) {
-	sorted[j].amp = model->A[i];
-	sorted[j].index = i;
-	printf("%f ", model->A[i]);
-    }
-    bubbleSort(sorted, end-start);
-
-    printf("\n");
-    for(j=0; j<n_harm; j++)
-	printf("%d %f\n", j, sorted[j].amp);
-
-    /* keep phase of top n_harm, predict others */
-
-    for(i=start; i<end; i++) {
-	top = 0;
-	for(j=0; j<n_harm; j++) {
-	    if (model->A[i] == sorted[j].amp) {
-		top = 1;
-		assert(i == sorted[j].index);
-	    }
-	}
-
-	#define ALTTOP
-	#ifdef ALTTOP
-	model->phi[i] = 0.0; /* make sure */
-	if (top) {
-	    model->phi[i] = i*pexp->phi1;
-	    removed++;
-	}
-	else {
-	    model->phi[i] = PI*(1.0 - 2.0*(float)rand()/RAND_MAX); // note: try rand for higher harms
-	    removed++;
-	}
-	#else
-	if (!top) {
-	    model->phi[i] = 0.0; /* make sure */
-	    if (pred)  {
-		//model->phi[i] = pexp->phi_prev[i] + i*N*(model->Wo + pexp->Wo_prev)/2.0;
-		model->phi[i] = i*model->phi[1];
-	    }
-	    else
-		model->phi[i] = PI*(1.0 - 2.0*(float)rand()/RAND_MAX); // note: try rand for higher harms
-	    removed++;
-	}
-	else {
-	    /* need to make this work thru budget of bits */
-	    quant_phase(&model->phi[i], -PI, PI, 3);
-	    not_removed++;
-	}
-	#endif
-    }
-    printf("dim: %d rem %d not_rem %d\n", end-start, removed, not_removed);
-
-}
+//     for(m=start; m<end; m++) {
+// 	float err = model->phi[m+1] - model->phi[m] - phi1_est;
+// 	err = atan2(sin(err),cos(err));
+// 	printf("%f\n", err);
+//     }
+// }
 
 
-static void limit_prediction_error(struct PEXP *pexp, MODEL *model, int start, int end, float limit)
-{
-    int   i;
-    float pred, pred_error, error;
+// static void first_order_band(MODEL *model, int start, int end, float phi1_est)
+// {
+//     int   m;
+//     float pred_err, av_pred_err;
+//     float c,s;
 
-    for(i=start; i<=end; i++) {
-	pred = pexp->phi_prev[i] + N*i*(model->Wo + pexp->Wo_prev)/2.0;
-	pred_error = pred - model->phi[i];
-	pred_error -= TWO_PI*floor((pred_error+PI)/TWO_PI);
-	quant_phase(&pred_error, -limit, limit, 2);
+//     s = c = 0.0;
+//     for(m=start; m<end; m++) {
+// 	pred_err = model->phi[m] - phi1_est*m;
+// 	s += sin(pred_err);
+// 	c += cos(pred_err);
+//     }
 
-	error = pred - pred_error - model->phi[i];
-	error -= TWO_PI*floor((error+PI)/TWO_PI);
-	printf("%f\n", pred_error);
-	model->phi[i] = pred - pred_error;
-    }
-}
+//     av_pred_err = atan2(s,c);
+//     for(m=start; m<end; m++) {
+// 	model->phi[m] = av_pred_err + phi1_est*m;
+// 	model->phi[m] = atan2(sin(model->phi[m]), cos(model->phi[m]));
+//     }
 
-
-static void quant_prediction_error(struct PEXP *pexp, MODEL *model, int start, int end, float limit)
-{
-    int   i;
-    float pred, pred_error;
-
-    for(i=start; i<=end; i++) {
-	pred = pexp->phi_prev[i] + N*i*(model->Wo + pexp->Wo_prev)/2.0;
-	pred_error = pred - model->phi[i];
-	pred_error -= TWO_PI*floor((pred_error+PI)/TWO_PI);
-
-	printf("%f\n", pred_error);
-	model->phi[i] = pred - pred_error;
-    }
-}
+// }
 
 
-static void print_sparse_pred_error(struct PEXP *pexp, MODEL *model, int start, int end, float mag_thresh)
-{
-    int    i, index;
-    float  mag, pred, error;
-    float  sparse_pe[MAX_AMP];
+// static void sub_linear(MODEL *model, int start, int end, float phi1_est)
+// {
+//     int   m;
 
-    mag = 0.0;
-    for(i=start; i<=end; i++)
-	mag += model->A[i]*model->A[i];
-    mag = 10*log10(mag/(end-start));
+//     for(m=start; m<end; m++) {
+// 	model->phi[m] = m*phi1_est;
+//     }
+// }
 
-    if (mag > mag_thresh) {
-	for(i=0; i<MAX_AMP; i++) {
-	    sparse_pe[i] = 0.0;
-	}
 
-	for(i=start; i<=end; i++) {
-	    pred = pexp->phi_prev[i] + N*i*(model->Wo + pexp->Wo_prev)/2.0;
-	    error = pred - model->phi[i];
-	    error = atan2(sin(error),cos(error));
+// static void top_amp(struct PEXP *pexp, MODEL *model, int start, int end, int n_harm, int pred)
+// {
+//     int removed = 0, not_removed = 0;
+//     int top, i, j;
+//     struct AMPINDEX sorted[MAX_AMP];
 
-	    index = MAX_AMP*i*model->Wo/PI;
-	    assert(index < MAX_AMP);
-	    sparse_pe[index] = error;
-	}
+//     /* sort into ascending order of amplitude */
 
-	/* dump spare phase vector in polar format */
+//     printf("\n");
+//     for(i=start,j=0; i<end; i++,j++) {
+// 	sorted[j].amp = model->A[i];
+// 	sorted[j].index = i;
+// 	printf("%f ", model->A[i]);
+//     }
+//     bubbleSort(sorted, end-start);
 
-	for(i=0; i<MAX_AMP; i++)
-	    printf("%f ", sparse_pe[i]);
-	printf("\n");
-    }
-}
+//     printf("\n");
+//     for(j=0; j<n_harm; j++)
+// 	printf("%d %f\n", j, sorted[j].amp);
+
+//     /* keep phase of top n_harm, predict others */
+
+//     for(i=start; i<end; i++) {
+// 	top = 0;
+// 	for(j=0; j<n_harm; j++) {
+// 	    if (model->A[i] == sorted[j].amp) {
+// 		top = 1;
+// 		assert(i == sorted[j].index);
+// 	    }
+// 	}
+
+// 	#define ALTTOP
+// 	#ifdef ALTTOP
+// 	model->phi[i] = 0.0; /* make sure */
+// 	if (top) {
+// 	    model->phi[i] = i*pexp->phi1;
+// 	    removed++;
+// 	}
+// 	else {
+// 	    model->phi[i] = PI*(1.0 - 2.0*(float)rand()/RAND_MAX); // note: try rand for higher harms
+// 	    removed++;
+// 	}
+// 	#else
+// 	if (!top) {
+// 	    model->phi[i] = 0.0; /* make sure */
+// 	    if (pred)  {
+// 		//model->phi[i] = pexp->phi_prev[i] + i*N*(model->Wo + pexp->Wo_prev)/2.0;
+// 		model->phi[i] = i*model->phi[1];
+// 	    }
+// 	    else
+// 		model->phi[i] = PI*(1.0 - 2.0*(float)rand()/RAND_MAX); // note: try rand for higher harms
+// 	    removed++;
+// 	}
+// 	else {
+// 	    /* need to make this work thru budget of bits */
+// 	    quant_phase(&model->phi[i], -PI, PI, 3);
+// 	    not_removed++;
+// 	}
+// 	#endif
+//     }
+//     printf("dim: %d rem %d not_rem %d\n", end-start, removed, not_removed);
+
+// }
+
+
+// static void limit_prediction_error(struct PEXP *pexp, MODEL *model, int start, int end, float limit)
+// {
+//     int   i;
+//     float pred, pred_error, error;
+
+//     for(i=start; i<=end; i++) {
+// 	pred = pexp->phi_prev[i] + N*i*(model->Wo + pexp->Wo_prev)/2.0;
+// 	pred_error = pred - model->phi[i];
+// 	pred_error -= TWO_PI*floor((pred_error+PI)/TWO_PI);
+// 	quant_phase(&pred_error, -limit, limit, 2);
+
+// 	error = pred - pred_error - model->phi[i];
+// 	error -= TWO_PI*floor((error+PI)/TWO_PI);
+// 	printf("%f\n", pred_error);
+// 	model->phi[i] = pred - pred_error;
+//     }
+// }
+
+
+// static void quant_prediction_error(struct PEXP *pexp, MODEL *model, int start, int end, float limit)
+// {
+//     int   i;
+//     float pred, pred_error;
+
+//     for(i=start; i<=end; i++) {
+// 	pred = pexp->phi_prev[i] + N*i*(model->Wo + pexp->Wo_prev)/2.0;
+// 	pred_error = pred - model->phi[i];
+// 	pred_error -= TWO_PI*floor((pred_error+PI)/TWO_PI);
+
+// 	printf("%f\n", pred_error);
+// 	model->phi[i] = pred - pred_error;
+//     }
+// }
+
+
+// static void print_sparse_pred_error(struct PEXP *pexp, MODEL *model, int start, int end, float mag_thresh)
+// {
+//     int    i, index;
+//     float  mag, pred, error;
+//     float  sparse_pe[MAX_AMP];
+
+//     mag = 0.0;
+//     for(i=start; i<=end; i++)
+// 	mag += model->A[i]*model->A[i];
+//     mag = 10*log10(mag/(end-start));
+
+//     if (mag > mag_thresh) {
+// 	for(i=0; i<MAX_AMP; i++) {
+// 	    sparse_pe[i] = 0.0;
+// 	}
+
+// 	for(i=start; i<=end; i++) {
+// 	    pred = pexp->phi_prev[i] + N*i*(model->Wo + pexp->Wo_prev)/2.0;
+// 	    error = pred - model->phi[i];
+// 	    error = atan2(sin(error),cos(error));
+
+// 	    index = MAX_AMP*i*model->Wo/PI;
+// 	    assert(index < MAX_AMP);
+// 	    sparse_pe[index] = error;
+// 	}
+
+// 	/* dump spare phase vector in polar format */
+
+// 	for(i=0; i<MAX_AMP; i++)
+// 	    printf("%f ", sparse_pe[i]);
+// 	printf("\n");
+//     }
+// }
 
 
 static void update_snr_calc(struct PEXP *pexp, MODEL *model, float before[])
@@ -744,7 +745,7 @@ static float refine_Wo(struct PEXP     *pexp,
 
 {
     int i;
-    float Wo_est, best_var, Wo, var, pred, error, best_Wo;
+    float Wo_est, best_var, Wo, var, pred, error, best_Wo = 0;
 
     /* test variance over a range of Wo values */
 
@@ -851,16 +852,16 @@ static void sparse_vq_pred_error(struct PEXP     *pexp,
 }
 
 
-static void predict_phases1(struct PEXP *pexp, MODEL *model, int start, int end) {
-    int i;
-    float best_Wo;
+// static void predict_phases1(struct PEXP *pexp, MODEL *model, int start, int end) {
+//     int i;
+//     float best_Wo;
 
-    best_Wo = refine_Wo(pexp, model, 1, model->L);
+//     best_Wo = refine_Wo(pexp, model, 1, model->L);
 
-    for(i=start; i<=end; i++) {
-	model->phi[i] = pexp->phi_prev[i] + N*i*best_Wo;
-    }
-}
+//     for(i=start; i<=end; i++) {
+// 	model->phi[i] = pexp->phi_prev[i] + N*i*best_Wo;
+//     }
+// }
 
 
 /*
@@ -1022,7 +1023,7 @@ static float bins[] = {/*
 void smooth_phase3(struct PEXP *pexp, MODEL *model) {
     int    m, i;
     int   nbins;
-    int   b;
+    int   b = 0;
     float f, best_Wo, pred, err;
     COMP  av[MAX_BINS];
 
@@ -1096,7 +1097,7 @@ void smooth_phase3(struct PEXP *pexp, MODEL *model) {
 void cb_phase1(struct PEXP *pexp, MODEL *model) {
     int   m, i;
     int   nbins;
-    int   b;
+    int   b = 0;
     float f, best_Wo;
     float max_val[MAX_BINS];
     int   max_ind[MAX_BINS];
@@ -1156,7 +1157,7 @@ void cb_phase1(struct PEXP *pexp, MODEL *model) {
 
 void cb_phase2(struct PEXP *pexp, MODEL *model) {
     int   st, m, i, a, b, step;
-    float diff,w,c,s,phi1_;
+    float diff,w,c,s; //,phi1_;
     float A[MAX_AMP];
 
     for(m=1; m<=model->L; m++) {
@@ -1182,7 +1183,7 @@ void cb_phase2(struct PEXP *pexp, MODEL *model) {
 	    w = 1.0;
 	    c += w*cos(diff); s += w*sin(diff);
 	}
-	phi1_ = atan2(s,c);
+	// phi1_ = atan2(s,c);
 	printf("replacing: ");
 	for(i=a; i<b; i++) {
 	    //model->phi[i] = i*phi1_;
